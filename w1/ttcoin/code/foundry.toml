@@ -1,0 +1,16 @@
+[profile.default]
+src = "."
+out = "out"
+libs = ["lib"]
+test = "test"
+cache_path = "cache"
+solc_version = "0.8.20"
+broadcast = true
+
+[rpc_endpoints]
+mainnet = "https://eth-mainnet.alchemyapi.io/v2/${API_KEY_ALCHEMY}"
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = true
