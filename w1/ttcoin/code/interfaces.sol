@@ -21,3 +21,8 @@ interface IERC20 {
 interface ITokenRecipient { 
     function receiveApproval(address from, uint256 value, address token, bytes calldata extraData) external; 
 }
+
+// 可选的ERC677接口 - 用于transferWithCallback模式
+interface ITokenCallback {
+     function tokensReceived(address from, uint256 amount, bytes calldata data) external;
+}

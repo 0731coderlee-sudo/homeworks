@@ -48,7 +48,6 @@ contract ttcoin is IERC20 {
         _transfer(_from, _to, _value);
         return true;
     }
-·
     function approve(address _spender, uint256 _value) public override returns (bool success) {
         require(_spender != address(0), "Approve to zero address");
         allowance[msg.sender][_spender] = _value;
@@ -92,4 +91,32 @@ contract ttcoin is IERC20 {
         
         return true;
     }
+
+    // 扩展transferwithcallback功能
+    // 新增：带hook的转账函数
+    function transferWithCallback(address _to, uint256 _value, bytes calldata _data) public returns (bool) {
+        // 先执行标准转账
+        _transfer(msg.sender, _to, _value);
+
+        // 如果目标地址是合约，则调用 tokensReceived 回调
+        if (isContract(_to)) {
+            try ITokenCallback(_to).tokensReceived(msg.sender, _value, _data) {
+                // 回调成功
+            } catch Error(string memory reason) {
+                revert(reason);
+            } catch {
+                revert("tokensReceived callback failed");
+            }
+        }
+
+        return true;
+    }
+
+    // 辅助函数：判断是否为合约地址
+    function isContract(address _addr) internal view returns (bool) {
+        uint256 size;
+        assembly { size := extcodesize(_addr) }
+        return size > 0;
+    }
+
 }

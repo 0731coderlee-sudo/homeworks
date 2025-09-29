@@ -2,7 +2,7 @@ pragma solidity ^0.8.0;
 
 import "./interfaces.sol";
 
-contract TokenBank {
+contract TokenBank is ITokenRecipient, ITokenCallback {
     IERC20 public token;
     mapping(address => uint256) private deposits;
 
@@ -13,13 +13,37 @@ contract TokenBank {
         token = _token;
     }
 
-    // 将用户的 _amount 转入银行（用户需先调用 token.approve(TokenBank, _amount)）
+    // 标准存款（需先 approve）
     function deposit(uint256 _amount) external {
         require(_amount > 0, "amount zero");
         bool ok = token.transferFrom(msg.sender, address(this), _amount);
         require(ok, "transferFrom failed");
         deposits[msg.sender] += _amount;
         emit Deposit(msg.sender, _amount);
+    }
+
+    // 支持 approveAndCall 一步存款
+    function receiveApproval(
+        address _from,
+        uint256 _value,
+        address _token,
+        bytes calldata /* _extraData */
+    ) external override {
+        require(_token == address(token), "invalid token");
+        require(msg.sender == address(token), "only token contract");
+        require(_value > 0, "amount zero");
+        bool ok = token.transferFrom(_from, address(this), _value);
+        require(ok, "transferFrom failed in callback");
+        deposits[_from] += _value;
+        emit Deposit(_from, _value);
+    }
+
+    // 支持 tokensReceived 钩子（用于 transferWithCallback）
+    function tokensReceived(address from, uint256 amount, bytes calldata /* data */) external override {
+        require(msg.sender == address(token), "only token contract");
+        require(amount > 0, "amount zero");
+        deposits[from] += amount;
+        emit Deposit(from, amount);
     }
 
     // 从银行提取之前存入的代币
