@@ -52,3 +52,4 @@ transferwithcall:
     https://polygonscan.com/token/0xec59021c1bf0a4e6acf8d9b09480ea1aaca91e2d
 - opensea
 - https://opensea.io/collection/xtnft-902975224
+- added:    不可变量fuzzing的一些局限性.md
