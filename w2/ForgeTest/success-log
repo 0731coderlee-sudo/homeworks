@@ -1,0 +1,21 @@
+luckyme@macdeMacBook-Pro ForgeTest % forge test --match-contract BankTest -v
+[⠊] Compiling...
+[⠰] Compiling 2 files with Solc 0.8.30
+[⠔] Solc 0.8.30 finished in 395.38ms
+Compiler run successful!
+
+Ran 13 tests for test/Bank.t.sol:BankTest
+[PASS] testDepositAmountUpdateCorrectly() (gas: 157777)
+[PASS] testDepositZeroAmount() (gas: 11509)
+[PASS] testDirectTransferDeposit() (gas: 76927)
+[PASS] testEventsAreEmitted() (gas: 89971)
+[PASS] testOnlyAdminCanWithdraw() (gas: 99290)
+[PASS] testOnlyAdminCanWithdrawAll() (gas: 166297)
+[PASS] testTop3WithFourUsers() (gas: 232069)
+[PASS] testTop3WithOneUser() (gas: 81644)
+[PASS] testTop3WithSameUserMultipleDeposits() (gas: 209187)
+[PASS] testTop3WithThreeUsers() (gas: 194527)
+[PASS] testTop3WithTwoUsers() (gas: 139480)
+[PASS] testWithdrawAllWithZeroBalance() (gas: 11010)
+[PASS] testWithdrawInsufficientBalance() (gas: 74730)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 1.04ms (1.24ms CPU time)
