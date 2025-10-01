@@ -1,0 +1,15 @@
+[⠊] Compiling...
+No files changed, compilation skipped
+
+Ran 8 tests for test/ImprovedContractsTest.t.sol:ImprovedContractsTest
+[PASS] testBaseURIManagement() (gas: 41599)
+[PASS] testBatchMint() (gas: 105011)
+[PASS] testBurnFunction() (gas: 31899)
+[PASS] testCallbackBuyingCompatibility() (gas: 224580)
+[PASS] testCompleteMarketplaceFlow() (gas: 373569)
+[PASS] testImprovedNFTBasicFunctions() (gas: 62724)
+[PASS] testOwnershipTransfer() (gas: 69011)
+[PASS] testTraditionalBuyingCompatibility() (gas: 229092)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 6.78ms (7.28ms CPU time)
+
+Ran 1 test suite in 109.26ms (6.78ms CPU time): 8 tests passed, 0 failed, 0 skipped (8 total tests)

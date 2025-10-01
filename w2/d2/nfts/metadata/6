@@ -1,0 +1,15 @@
+{
+    "name": "lucky2me6",
+    "description": "message from tt, hello web3!",
+    "image": "ipfs://bafybeigvjamrjwesphlu65jlutgzmaofnpopr3huzx5ysot22g6ckf6wfq/6.avif",
+    "attributes": [
+        {
+            "trait_type": "Artist",
+            "value": "tt"
+        },
+        {
+            "trait_type": "Theme",
+            "value": "Web3 Inspiration"
+        }
+    ]
+}

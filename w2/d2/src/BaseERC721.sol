@@ -9,6 +9,8 @@ import "openzeppelin-contracts/contracts/utils/Context.sol";
 contract BaseERC721 {
     using Strings for uint256;
     using Address for address;
+    
+    address public owner;
     string private _name;
     string private _symbol;
     string private _baseURI;
@@ -20,6 +22,8 @@ contract BaseERC721 {
     mapping(uint256 => address) private _tokenApprovals;
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
+    // Mapping from token ID to custom tokenURI (overrides baseURI + tokenId)
+    mapping(uint256 => string) private _customTokenURIs;
 
     event Transfer(
         address indexed from,
@@ -39,6 +43,16 @@ contract BaseERC721 {
         bool approved
     );
 
+    event OwnershipTransferred(
+        address indexed previousOwner, 
+        address indexed newOwner
+    );
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "BaseERC721: caller is not the owner");
+        _;
+    }
+
     constructor(
         string memory name_,
         string memory symbol_,
@@ -48,6 +62,8 @@ contract BaseERC721 {
         _name = name_;
         _symbol = symbol_;
         _baseURI = baseURI_;
+        owner = msg.sender;
+        emit OwnershipTransferred(address(0), msg.sender);
     }
 
     /**
@@ -83,6 +99,14 @@ contract BaseERC721 {
         // should return baseURI
         /**code*/
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        
+        // 如果设置了自定义URI，优先使用自定义URI
+        string memory customURI = _customTokenURIs[tokenId];
+        if (bytes(customURI).length > 0) {
+            return customURI;
+        }
+        
+        // 否则使用默认的 baseURI + tokenId
         return string(abi.encodePacked(_baseURI, tokenId.toString()));
     }
 
@@ -97,7 +121,7 @@ contract BaseERC721 {
      *
      * Emits a {Transfer} event.
      */
-    function mint(address to, uint256 tokenId) public {
+    function mint(address to, uint256 tokenId) public onlyOwner {
         /**code*/
         require(to != address(0), "ERC721: mint to the zero address");
         require(!_exists(tokenId), "ERC721: token already minted");
@@ -108,12 +132,117 @@ contract BaseERC721 {
     }
 
     /**
+     * @dev Batch mint multiple tokens to the same address
+     */
+    function batchMint(address to, uint256[] calldata tokenIds) external onlyOwner {
+        require(to != address(0), "ERC721: mint to the zero address");
+        
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            uint256 tokenId = tokenIds[i];
+            require(!_exists(tokenId), "ERC721: token already minted");
+            _owners[tokenId] = to;
+        }
+        
+        _balances[to] += tokenIds.length;
+        
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            emit Transfer(address(0), to, tokenIds[i]);
+        }
+    }
+
+    /**
+     * @dev Mint token with custom tokenURI
+     * @param to Address to mint the token to
+     * @param tokenId Token ID to mint
+     * @param customURI Custom URI for this specific token
+     */
+    function mintWithURI(address to, uint256 tokenId, string memory customURI) public onlyOwner {
+        require(to != address(0), "ERC721: mint to the zero address");
+        require(!_exists(tokenId), "ERC721: token already minted");
+        require(bytes(customURI).length > 0, "ERC721: URI cannot be empty");
+        
+        _owners[tokenId] = to;
+        _balances[to] += 1;
+        _customTokenURIs[tokenId] = customURI;
+
+        emit Transfer(address(0), to, tokenId);
+    }
+
+    /**
+     * @dev Batch mint tokens with custom URIs
+     * @param to Address to mint tokens to
+     * @param tokenIds Array of token IDs to mint
+     * @param customURIs Array of custom URIs corresponding to token IDs
+     */
+    function batchMintWithURIs(
+        address to, 
+        uint256[] calldata tokenIds, 
+        string[] calldata customURIs
+    ) external onlyOwner {
+        require(to != address(0), "ERC721: mint to the zero address");
+        require(tokenIds.length == customURIs.length, "ERC721: arrays length mismatch");
+        
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            uint256 tokenId = tokenIds[i];
+            string memory customURI = customURIs[i];
+            
+            require(!_exists(tokenId), "ERC721: token already minted");
+            require(bytes(customURI).length > 0, "ERC721: URI cannot be empty");
+            
+            _owners[tokenId] = to;
+            _customTokenURIs[tokenId] = customURI;
+        }
+        
+        _balances[to] += tokenIds.length;
+        
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            emit Transfer(address(0), to, tokenIds[i]);
+        }
+    }
+
+    /**
+     * @dev Set custom URI for an existing token
+     * @param tokenId Token ID to set URI for
+     * @param customURI New URI for the token
+     */
+    function setTokenURI(uint256 tokenId, string memory customURI) public onlyOwner {
+        require(_exists(tokenId), "ERC721: URI set for nonexistent token");
+        _customTokenURIs[tokenId] = customURI;
+    }
+
+    /**
+     * @dev Get custom URI for a token (if any)
+     * @param tokenId Token ID to query
+     * @return Custom URI string (empty if not set)
+     */
+    function getCustomTokenURI(uint256 tokenId) public view returns (string memory) {
+        return _customTokenURIs[tokenId];
+    }
+
+    // Auto-increment token ID counter
+    uint256 private _currentTokenId = 0;
+    
+    /**
+     * @dev Auto-increment mint with custom URI
+     * @param to Address to mint token to
+     * @param customURI Custom URI for the token
+     * @return tokenId The minted token ID
+     */
+    function autoMintWithURI(address to, string memory customURI) public onlyOwner returns (uint256) {
+        _currentTokenId++;
+        uint256 tokenId = _currentTokenId;
+        
+        mintWithURI(to, tokenId, customURI);
+        return tokenId;
+    }
+
+    /**
      * @dev See {IERC721-balanceOf}.
      */
-    function balanceOf(address owner) public view returns (uint256) {
+    function balanceOf(address tokenOwner) public view returns (uint256) {
         /**code*/
-        require(owner != address(0), "ERC721: balance query for the zero address");
-        return _balances[owner];
+        require(tokenOwner != address(0), "ERC721: balance query for the zero address");
+        return _balances[tokenOwner];
     }
 
     /**
@@ -121,20 +250,20 @@ contract BaseERC721 {
      */
     function ownerOf(uint256 tokenId) public view returns (address) {
         /**code*/
-        address owner = _owners[tokenId];
-        require(owner != address(0), "ERC721: owner query for nonexistent token");
-        return owner;
+        address tokenOwner = _owners[tokenId];
+        require(tokenOwner != address(0), "ERC721: owner query for nonexistent token");
+        return tokenOwner;
     }
 
     /**
      * @dev See {IERC721-approve}.
      */
     function approve(address to, uint256 tokenId) public {
-        address owner = ownerOf(tokenId);
-        require(to != owner, "ERC721: approval to current owner");
+        address tokenOwner = ownerOf(tokenId);
+        require(to != tokenOwner, "ERC721: approval to current owner");
 
         require(
-            msg.sender == owner || isApprovedForAll(owner, msg.sender),
+            msg.sender == tokenOwner || isApprovedForAll(tokenOwner, msg.sender),
             "ERC721: approve caller is not owner nor approved for all"
         );
 
@@ -166,11 +295,11 @@ contract BaseERC721 {
      * @dev See {IERC721-isApprovedForAll}.
      */
     function isApprovedForAll(
-        address owner,
+        address tokenOwner,
         address operator
     ) public view returns (bool) {
         /**code*/
-        return _operatorApprovals[owner][operator];
+        return _operatorApprovals[tokenOwner][operator];
     }
 
     /**
@@ -269,8 +398,8 @@ contract BaseERC721 {
     ) internal view returns (bool) {
         /**code*/
         require(_exists(tokenId), "ERC721: operator query for nonexistent token");
-        address owner = ownerOf(tokenId);
-        return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+        address tokenOwner = ownerOf(tokenId);
+        return (spender == tokenOwner || getApproved(tokenId) == spender || isApprovedForAll(tokenOwner, spender));
     }
 
     /**
@@ -308,6 +437,79 @@ contract BaseERC721 {
         /**code*/
         _tokenApprovals[tokenId] = to;
         emit Approval(ownerOf(tokenId), to, tokenId);
+    }
+
+    /**
+     * @dev Burns `tokenId`. See {ERC721-_burn}.
+     *
+     * Requirements:
+     *
+     * - The caller must own `tokenId` or be an approved operator.
+     */
+    function burn(uint256 tokenId) public {
+        require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: caller is not token owner or approved");
+        _burn(tokenId);
+    }
+
+    /**
+     * @dev Destroys `tokenId`.
+     * The approval is cleared when the token is burned.
+     *
+     * Requirements:
+     *
+     * - `tokenId` must exist.
+     *
+     * Emits a {Transfer} event.
+     */
+    function _burn(uint256 tokenId) internal {
+        address tokenOwner = ownerOf(tokenId);
+
+        // Clear approvals
+        _approve(address(0), tokenId);
+
+        _balances[tokenOwner] -= 1;
+        delete _owners[tokenId];
+        
+        // Clear custom URI if exists
+        if (bytes(_customTokenURIs[tokenId]).length > 0) {
+            delete _customTokenURIs[tokenId];
+        }
+
+        emit Transfer(tokenOwner, address(0), tokenId);
+    }
+
+    /**
+     * @dev Sets a new base URI for all tokens
+     * Only the contract owner can call this function
+     */
+    function setBaseURI(string memory newBaseURI) public onlyOwner {
+        _baseURI = newBaseURI;
+    }
+
+    /**
+     * @dev Returns the base URI for tokens
+     */
+    function baseURI() public view returns (string memory) {
+        return _baseURI;
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0), "BaseERC721: new owner is the zero address");
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+    }
+
+    /**
+     * @dev Leaves the contract without owner. It will not be possible to call
+     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     */
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipTransferred(owner, address(0));
+        owner = address(0);
     }
 
     function _isContract(address account) internal view returns (bool) {
