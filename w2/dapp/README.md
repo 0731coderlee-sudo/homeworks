@@ -1,0 +1,13 @@
+### 添加tokenbank前端 --polygonMainNet
+- 0x66195151E0882500CB594B1cd40613CB8937F8e7 xtcoin (xtc)
+- 0xec59021c1Bf0A4e6aCF8d9B09480ea1AACA91e2d xtnft (xtnft)
+- 0x4b78DcD21Edb2A51881Cb4B0328fFfa3A8dA9FB0 nftmarket
+- **0x9e38C9cBf310c27aFc1c141a7CE5a10959f073d2 tokenBank**
+- deployer: 0xA29a00E345A115EbC11D4724EC1133CA691d2B2a
+
+
+### tokenBank-Dapp
+- todo 开发tokenbank前端
+- 实现存款 提现 以及depositor的展示功能 done!
+- 美化前端ui界面                        
+- 监听nftmarket合约的上架和买卖事件     done!
