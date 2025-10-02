@@ -1,0 +1,8 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["/Users/luckyme/Desktop/workspace/upchains/homeworks/w2/d2/lib"]
+# remappings = ["forge-std/=../d2/lib/forge-std/src/"]
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
