@@ -1,0 +1,7 @@
+{
+  "extends": "solhint:recommended",
+  "rules": {
+    "func-name-mixedcase": "off",
+    "var-name-mixedcase": "off"
+  }
+}

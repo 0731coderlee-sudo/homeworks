@@ -1,0 +1,109 @@
+:root {
+  --bg:#f8fafc;
+  --bg-alt:#ffffff;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --border-accent:#10b981;
+  --text:#1e293b;
+  --text-dim:#64748b;
+  --primary:#10b981;
+  --primary-hover:#059669;
+  --danger:#ef4444;
+  --radius:12px;
+  --shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+}
+* { box-sizing:border-box; }
+html,body { height:100%; }
+body {
+  margin:0; padding:0; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%); color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4 { font-weight:600; letter-spacing:.5px; margin:0 0 .75rem; }
+p { margin:0 0 .75rem; }
+
+.container { width:100%; max-width:960px; margin:0 auto; padding:40px 24px 120px; }
+.grid { display:grid; gap:24px; }
+@media (min-width: 900px){ .grid-cols-2 { grid-template-columns: 1fr 1fr; } }
+
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow); position:relative; }
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.card-title { font-size:16px; font-weight:600; }
+
+.flex { display:flex; }
+.flex-col { flex-direction:column; }
+.flex-center { align-items:center; justify-content:center; }
+.gap-8 { gap:8px; }
+.gap-12 { gap:12px; }
+
+.badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; letter-spacing:.5px; text-transform:uppercase; background:var(--border); color:var(--text-dim); }
+.badge.ok { background:#dcfce7; color:#16a34a; }
+.badge.warn { background:#fef3c7; color:#d97706; }
+.badge.err { background:#fecaca; color:#dc2626; }
+
+.btn { cursor:pointer; border:1px solid var(--border); background:var(--bg-alt); color:var(--text); font-size:14px; padding:8px 16px; border-radius:8px; line-height:1; display:inline-flex; align-items:center; gap:6px; transition:.15s background,.15s border,.15s color; }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+.btn:not(:disabled):hover { background:var(--primary); border-color:var(--primary); }
+.btn-primary { background:var(--primary); border-color:var(--primary); }
+.btn-primary:not(:disabled):hover { background:var(--primary-hover); }
+.btn-outline { background:transparent; }
+
+.input { width:100%; padding:10px 12px; background:var(--bg-alt); border:1px solid var(--border); color:var(--text); border-radius:8px; font-size:14px; }
+.input:focus { outline:1px solid var(--primary); border-color:var(--primary); }
+
+.muted { color:var(--text-dim); font-size:12px; }
+.separator { height:1px; background:var(--border); margin:24px 0; border:none; }
+
+.list { list-style:none; margin:0; padding:0; }
+.list li { padding:6px 0; font-size:13px; border-bottom:1px dashed var(--border); }
+
+.status { font-size:12px; margin-top:8px; white-space:pre-wrap; word-break:break-all; }
+.status.ok { color:#059669; }
+.status.err { color:#dc2626; }
+
+.header { position:sticky; top:0; backdrop-filter:blur(12px); background:rgba(248,250,252,0.9); border-bottom:1px solid var(--border); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.logo { font-weight:600; font-size:18px; letter-spacing:.5px; }
+
+.small-address { font-family:monospace; background:var(--bg-alt); padding:4px 8px; border-radius:6px; font-size:12px; }
+.copy-btn { cursor:pointer; background:none; border:none; color:var(--text-dim); font-size:11px; }
+.copy-btn:hover { color:var(--text); }
+
+.scroll-area { max-height:260px; overflow-y:auto; scrollbar-width:thin; }
+.scroll-area::-webkit-scrollbar { width:6px; }
+.scroll-area::-webkit-scrollbar-track { background:transparent; }
+.scroll-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+.footer { text-align:center; font-size:11px; color:var(--text-dim); margin-top:60px; }
+
+/* 新增工具样式 */
+.font-mono { font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace; }
+.text-dim { color: var(--text-dim); }
+.justify-between { justify-content: space-between; }
+
+/* NFT 市场样式 */
+.nft-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  gap: 12px; 
+}
+
+.nft-card { 
+  background: var(--card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius); 
+  padding: 12px; 
+  transition: border-color 0.2s ease;
+  font-size: 13px;
+}
+
+.nft-card:hover { 
+  border-color: var(--border-accent); 
+}
+
+.nft-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 8px 0;
+}
