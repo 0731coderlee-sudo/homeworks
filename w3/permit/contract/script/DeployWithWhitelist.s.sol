@@ -6,6 +6,7 @@ import "../src/ttcoin.sol";
 import "../src/BaseERC721.sol";
 import "../src/NFTMarket.sol";
 import "../src/tokenbank.sol";
+import "../src/SimplePermit2.sol";
 
 contract DeployWithWhitelistScript is Script {
     function run() external {
@@ -26,8 +27,11 @@ contract DeployWithWhitelistScript is Script {
             "https://api.example.com/"    // baseURI
         );
 
-        // 3. 部署 TokenBank
-        TokenBank tokenBank = new TokenBank(token);
+        // 3. 部署 SimplePermit2
+        SimplePermit2 permit2 = new SimplePermit2();
+
+        // 4. 部署 TokenBank
+        TokenBank tokenBank = new TokenBank(token, IPermit2(address(permit2)));
 
         // 4. 部署 NFTMarket
         NFTMarket nftMarket = new NFTMarket(token);

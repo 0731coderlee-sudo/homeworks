@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IERC20, ITokenRecipient, ITokenCallback, IERC20Permit} from "./interfaces.sol";
+import {IERC20, ITokenRecipient, ITokenCallback, IERC20Permit, IPermit2} from "./interfaces.sol";
 
 contract TokenBank is ITokenRecipient, ITokenCallback {
     IERC20 public token;
+    IPermit2 public permit2;  // Permit2 合约地址
     mapping(address => uint256) private deposits;
     address[] private depositors; // 存储所有存款用户的地址
     struct DepositRecord {
@@ -18,8 +19,9 @@ contract TokenBank is ITokenRecipient, ITokenCallback {
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
 
-    constructor(IERC20 _token) {
+    constructor(IERC20 _token, IPermit2 _permit2) {
         token = _token;
+        permit2 = _permit2;
     }
 
     // 标准存款（需先 approve）
@@ -57,6 +59,49 @@ contract TokenBank is ITokenRecipient, ITokenCallback {
 
         // 2. 执行存款逻辑
         _deposit(owner, amount);
+    }
+
+    // Permit2: 使用 Permit2 签名进行一键存款
+    /// @notice 通过 Permit2 离线签名授权并存款
+    /// @param owner 代币所有者（签名者）
+    /// @param amount 存款金额
+    /// @param nonce Permit2 的 nonce
+    /// @param deadline 签名过期时间
+    /// @param signature Permit2 签名
+    function depositWithPermit2(
+        address owner,
+        uint256 amount,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) external {
+        require(amount > 0, "amount zero");
+
+        // 构造 Permit2 参数
+        IPermit2.PermitTransferFrom memory permitMsg = IPermit2.PermitTransferFrom({
+            permitted: IPermit2.TokenPermissions({
+                token: address(token),
+                amount: amount
+            }),
+            nonce: nonce,
+            deadline: deadline
+        });
+
+        IPermit2.SignatureTransferDetails memory transferDetails = IPermit2.SignatureTransferDetails({
+            to: address(this),
+            requestedAmount: amount
+        });
+
+        // 通过 Permit2 执行转账（代币直接从 owner 转到本合约）
+        permit2.permitTransferFrom(
+            permitMsg,
+            transferDetails,
+            owner,
+            signature
+        );
+
+        // 记录存款
+        _recordDeposit(owner, amount);
     }
 
     // 支持 approveAndCall 一步存款

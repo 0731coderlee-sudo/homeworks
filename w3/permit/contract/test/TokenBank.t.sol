@@ -4,10 +4,12 @@ pragma solidity ^0.8.0;
 import "forge-std/Test.sol";
 import "../src/ttcoin.sol";
 import "../src/tokenbank.sol";
+import "../src/SimplePermit2.sol";
 
 contract TokenBankTest is Test {
     ttcoin public token;
     TokenBank public bank;
+    SimplePermit2 public permit2;
 
     address public owner;
     address public user1;
@@ -29,8 +31,11 @@ contract TokenBankTest is Test {
         vm.prank(owner);
         token = new ttcoin(INITIAL_SUPPLY, "Test Token", "TT");
 
+        // 部署 Permit2
+        permit2 = new SimplePermit2();
+
         // 部署银行
-        bank = new TokenBank(IERC20(address(token)));
+        bank = new TokenBank(IERC20(address(token)), IPermit2(address(permit2)));
 
         // 给 user1 和 user2 分配代币
         vm.startPrank(owner);

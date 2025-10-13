@@ -5,6 +5,7 @@ import { RecentDeposits } from './components/RecentDeposits';
 import { NftMarketEvents } from './components/NftMarketEvents';
 import { UserBalance } from './components/UserBalance';
 import { NFTMarket } from './components/NFTMarket';
+import { Permit2Demo } from './components/Permit2Demo';
 import { WalletProvider, useWallet } from './features/wallet/useWallet';
 
 function AppContent() {
@@ -22,6 +23,7 @@ function AppContent() {
             <UserBalance account={account} />
           </div>
         )}
+        <Permit2Demo />
         <div className="grid grid-cols-2">
           <BankPanel />
           <RecentDeposits />
