@@ -1,0 +1,20 @@
+{
+  "name": "nft-market-upgrade",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test:proxy": "tsx script/ViemTest.ts",
+    "test:list": "tsx script/ViemListMarket.ts",
+    "upgrade:v3": "tsx script/UpgradeToV3.ts",
+    "test:signature": "tsx script/TestSignatureListing.ts",
+    "test:upgrade": "tsx script/TestUpgrade.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "viem": "^2.38.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

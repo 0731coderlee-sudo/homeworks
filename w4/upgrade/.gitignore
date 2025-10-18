@@ -1,0 +1,7 @@
+lib/
+out/
+cache/
+
+.env
+
+todo.md
