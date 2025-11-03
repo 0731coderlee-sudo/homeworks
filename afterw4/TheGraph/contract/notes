@@ -1,0 +1,44 @@
+export TTC_INITIAL_SUPPLY=5000000  
+export TTC_TOKEN_NAME="My Token"
+export TTC_TOKEN_SYMBOL="MTK"
+
+# 然后运行部署
+forge script script/TTCoin.s.sol:TTCoinScript \
+    --rpc-url $SEPOLIA_RPC_URL \
+    --broadcast \
+    --verify \
+    -vvvv
+Contract Address: 0x4BB3DbF015c1CFF5ACF085FC74fbF71059635688
+
+
+# 自定义参数
+export NFT_NAME="My NFT Collection"
+export NFT_SYMBOL="MNC"
+export NFT_BASE_URI="https://api.example.com/metadata/"
+
+# 然后运行部署
+forge script script/BaseERC721.s.sol:BaseERC721Script \
+    --rpc-url $SEPOLIA_RPC_URL \
+    --broadcast \
+    --verify \
+    -vvvv
+Contract Address: 0x158B8910808a681AC2A35506753f617b0fc440D1
+
+export TTC_ADDRESS=0x4BB3DbF015c1CFF5ACF085FC74fbF71059635688
+export NFT_ADDRESS=0x158B8910808a681AC2A35506753f617b0fc440D1
+
+forge script script/NFTMarket.s.sol:NFTMarketScript \
+    --rpc-url $SEPOLIA_RPC_URL \
+    --broadcast \
+    --verify \
+    -vvvv
+Contract Address: 0x543D6e9c9c7b1D9F5A21601EeBDC023B17fdB6DC
+
+# 设置环境变量
+export BUYER_PRIVATE_KEY=0x39fb915967fdd61dd5246c94d31891e56e38387abe482d9712fb2b4ed349c236
+
+# 运行脚本
+forge script script/Interact.s.sol:InteractScript \
+    --rpc-url $SEPOLIA_RPC_URL \
+    --broadcast \
+    -vvvv

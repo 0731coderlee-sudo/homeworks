@@ -1,0 +1,8 @@
+创建Azuki NFT 代币仪表板，包括：
+network: eth
+address: 0xED5AF388653567Af2F388E6224dC7C4b3241C544
+持有者总数
+持有人名单（持有人，持有的NFT数量）
+最近一段时间在 OpenSea 的交易量。
+提交可以公开访问的Dune看板链接
+
